@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Global Ummah - All-in-One Islamic Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #00796b; /* Teal */
+            --secondary-color: #26a69a; /* Light Teal */
+            --light-bg: #f5f5f5;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            padding-top: 56px;
+        }
+        .navbar-custom {
+            background-color: var(--primary-color);
+        }
+        .navbar-custom .nav-link, .navbar-custom .navbar-brand {
+            color: white !important;
+        }
+        .card-header-custom {
+            background-color: var(--secondary-color);
+            color: white;
+            font-weight: bold;
+        }
+        .feature-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .qibla-compass {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid var(--primary-color);
+            margin: 20px auto;
+            position: relative;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .qibla-arrow {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) rotate(0deg);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 75px solid red; 
+            transform-origin: 50% 100%;
+            transition: transform 1s cubic-bezier(0.2, 0.8, 0.5, 1);
+        }
+        .arabic-text {
+            font-size: 1.8rem;
+            line-height: 2.5;
+            font-family: 'Amiri', 'Times New Roman', serif; 
+            color: #333;
+        }
+        .verse-container {
+            border-bottom: 1px dashed #ccc;
+            padding: 15px 0;
+        }
+        .surah-item {
+            cursor: pointer;
+            padding: 8px 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        .surah-item:hover {
+            background-color: var(--light-bg);
+        }
+        /* Style for Hadith results */
+        .hadith-result {
+            border-left: 3px solid var(--primary-color);
+            padding-left: 15px;
+            margin-bottom: 20px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        /* Style for Dhikr Counter */
+        #dhikr-counter-display {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-custom shadow">
+    <div class="container">
+        <a class="navbar-brand" href="#">**The Global Ummah** 🌟</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="#prayer-times"><i class="fas fa-clock"></i> Prayer</a></li>
+                <li class="nav-item"><a class="nav-link" href="#quran"><i class="fas fa-book-open"></i> Quran</a></li>
+                <li class="nav-item"><a class="nav-link" href="#hadith-search"><i class="fas fa-search"></i> Hadith</a></li>
+                <li class="nav-item"><a class="nav-link" href="#knowledge"><i class="fas fa-layer-group"></i> Hubs</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+
+    <div class="p-5 mb-4 bg-white rounded-3 shadow">
+        <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold" style="color: var(--primary-color);">Your Comprehensive Islamic Hub</h1>
+            <p class="col-md-8 fs-4">Access **live, accurate data** for prayer times, Qibla direction, Quranic inspiration, and Hadith search.</p>
+            <p class="text-muted"><i class="fas fa-map-marker-alt"></i> Current Location: <span id="location-display">Determining location...</span></p>
+        </div>
+    </div>
+    
+    <div class="row mb-5" id="prayer-times">
+        <h2 class="text-center mb-4" style="color: var(--primary-color);">🕌 Daily Prayer & Qibla</h2>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow feature-card h-100">
+                <div class="card-header card-header-custom">⏰ **Prayer Times** (Aladhan API)</div>
+                <div class="card-body">
+                    <p class="card-text text-muted">Times calculated based on your geolocation (Method: ISNA).</p>
+                    <div id="prayer-output">
+                        <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+                        <p>Fetching prayer times...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card shadow feature-card h-100">
+                <div class="card-header card-header-custom">🧭 **Qibla Direction** (Geodetic Calculation)</div>
+                <div class="card-body text-center">
+                    <div class="qibla-compass">
+                        <div class="qibla-arrow" id="qibla-arrow"></div>
+                        <div class="position-absolute top-50 start-50 translate-middle text-muted">N</div>
+                        <div class="position-absolute bottom-0 start-50 translate-middle text-muted">S</div>
+                        <div class="position-absolute top-50 start-0 translate-middle text-muted">W</div>
+                        <div class="position-absolute top-50 end-0 translate-middle text-muted">E</div>
+                    </div>
+                    <p class="mt-3">Qibla is at a **<span id="qibla-degrees" class="fw-bold text-danger">--</span>**° bearing from North.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-5" id="quran">
+        <h2 class="text-center mb-4" style="color: var(--primary-color);">📖 Quran & Memorization Tools</h2>
+        <div class="col-12">
+            <div class="card shadow feature-card">
+                <div class="card-header card-header-custom">✨ **Quran Reader** (CDN-Based Files)</div>
+                <div class="card-body">
+                    <div id="quran-output" class="p-3 rounded bg-light border">
+                        <p class="text-center text-muted">Click the button below to load the full Quran list.</p>
+                    </div>
+                    <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#quranReaderModal" onclick="loadSurahList()"><i class="fas fa-book"></i> Read Full Quran</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-5" id="hadith-search">
+        <h2 class="text-center mb-4" style="color: var(--primary-color);">🔍 Hadith Search Engine</h2>
+        <div class="col-12">
+            <div class="card shadow feature-card">
+                <div class="card-header card-header-custom">📚 **Search Sahih Muslim** (Client-Side CDN Search)</div>
+                <div class="card-body">
+                    <p class="text-muted">Loads the entire Sahih Muslim collection once for **fast client-side search**.</p>
+                    <div class="input-group mb-3">
+                        <input type="text" id="hadith-query" class="form-control" placeholder="E.g., 'intention' or 'wudu'" aria-label="Hadith Search Query">
+                        <button class="btn btn-secondary" type="button" onclick="searchHadith()"><i class="fas fa-search"></i> Search</button>
+                    </div>
+                    
+                    <div id="hadith-results-output" class="mt-4">
+                        <p class="text-muted text-center">Enter a search term above and click Search.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5" id="knowledge">
+        <h2 class="text-center mb-4" style="color: var(--primary-color);">🌐 Extended Features Hubs</h2>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card shadow feature-card h-100 text-center p-3">
+                <i class="fas fa-hands fa-3x mb-3 text-success"></i>
+                <h5 class="card-title">**Digital Tasbih Counter**</h5>
+                
+                <span id="dhikr-counter-display">0</span>
+                <p class="text-muted mb-3">Target: <span id="dhikr-target">33</span></p>
+
+                <select id="dhikr-select" class="form-select form-select-sm mb-3" onchange="resetCounter()">
+                    <option value="SubhanAllah">سُبْحَانَ ٱللَّٰهِ (SubhanAllah)</option>
+                    <option value="Alhamdulillah">ٱلْحَمْدُ لِلَّٰهِ (Alhamdulillah)</option>
+                    <option value="AllahuAkbar">ٱللَّٰهُ أَكْبَرُ (Allahu Akbar)</option>
+                    <option value="LaIlahaIllaAllah">لَا إِلَٰهَ إِلَّا ٱللَّٰهُ</option>
+                </select>
+
+                <button class="btn btn-success btn-lg w-100 mb-2" onclick="incrementCounter()"><i class="fas fa-plus"></i> Tap to Count</button>
+                <button class="btn btn-outline-danger btn-sm" onclick="resetCounter()"><i class="fas fa-undo"></i> Reset</button>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow feature-card h-100 text-center p-3">
+                <i class="fas fa-video fa-3x mb-3 text-secondary"></i>
+                <h5 class="card-title">**Live Coverage** (Khutbahs)</h5>
+                <p class="card-text"><small>Requires external streaming platform integration.</small></p>
+                <button class="btn btn-outline-secondary btn-sm">Watch Live</button>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow feature-card h-100 text-center p-3">
+                <i class="fas fa-users fa-3x mb-3 text-secondary"></i>
+                <h5 class="card-title">**Community Network**</h5>
+                <p class="card-text"><small>Requires a complete backend for user accounts and social feeds.</small></p>
+                <button class="btn btn-outline-secondary btn-sm">Join Community</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer class="bg-dark text-white py-4 mt-5">
+    <div class="container text-center">
+        <p>&copy; 2025 The Global Ummah. **No Registration Needed.**</p>
+        <p class="mb-0"><small>Data powered by Aladhan API and stable GitHub CDN repositories.</small></p>
+    </div>
+</footer>
+
+<div class="modal fade" id="quranReaderModal" tabindex="-1" aria-labelledby="quranReaderModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="quranReaderModalLabel">Full Quran Reader</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-4 border-end">
+            <h6 class="text-primary mb-3">Select Surah (114)</h6>
+            <div id="surah-list-output" class="list-group list-group-flush">
+                <div class="text-center"><div class="spinner-border text-primary" role="status"></div></div>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <h4 id="surah-title" class="text-center" style="color: var(--primary-color);">Select a Surah</h4>
+            <div id="surah-content-output" class="mt-4">
+              <p class="text-muted text-center">Please select a Surah from the list to view its Arabic text and translation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Global Constants
+    const KAABA_LAT = 21.422487;
+    const KAABA_LON = 39.826206;
+
+    // --- QURAN CDN CONSTANTS (Local Fallback Configured) ---
+    // If these local files exist, they will be used first, otherwise the code falls back to CDN.
+    const QURAN_INFO_LOCAL = 'info.json'; 
+    const QURAN_AYAH_LOCAL_ARABIC = '1.json'; // Local file for Surah 1 Arabic
+    const QURAN_AYAH_LOCAL_ENGLISH = '1-eng.json'; // Local file for Surah 1 English
+    
+    // CDN Fallback (Only used if the local fetch fails)
+    const QURAN_INFO_URL = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/info.json'; 
+    const QURAN_AYAH_BASE_URL = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions'; 
+    const QURAN_ARABIC_EDITION = 'quran-uthmani-min'; 
+    const QURAN_TRANSLATION_EDITION = 'eng-sahih'; 
+
+    // --- HADITH CDN CONSTANTS (Local Fallback Configured) ---
+    const HADITH_LOCAL_FILE = 'sahih-muslim.json';
+    const HADITH_CDN_URL = 'https://cdn.jsdelivr.net/gh/sunnah-json/sahih-muslim@latest/sahih-muslim.json';
+    
+    // --- DHIKR COUNTER LOGIC (UNCHANGED) ---
+    let currentCount = 0;
+    const defaultTarget = 33; 
+
+    function updateCounterDisplay() {
+        document.getElementById('dhikr-counter-display').textContent = currentCount;
+        
+        const target = parseInt(document.getElementById('dhikr-target').textContent);
+        if (currentCount >= target) {
+            document.getElementById('dhikr-counter-display').style.color = 'red';
+        } else {
+            document.getElementById('dhikr-counter-display').style.color = 'var(--primary-color)';
+        }
+    }
+
+    function incrementCounter() {
+        currentCount++;
+        updateCounterDisplay();
+    }
+
+    function resetCounter() {
+        currentCount = 0;
+        const dhikr = document.getElementById('dhikr-select').value;
+        const targetElement = document.getElementById('dhikr-target');
+        
+        if (dhikr === 'LaIlahaIllaAllah') {
+            targetElement.textContent = 100;
+        } else {
+            targetElement.textContent = defaultTarget;
+        }
+
+        updateCounterDisplay();
+    }
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+        getUserLocationAndFetchData();
+        updateCounterDisplay(); 
+    });
+
+    // =================================================================
+    // PRAYER/QIBLA FUNCTIONS (UNCHANGED - Aladhan is stable)
+    // =================================================================
+
+    function getUserLocationAndFetchData() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    document.getElementById('location-display').textContent = `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
+                    fetchPrayerTimes(lat, lon);
+                    calculateQiblaDirection(lat, lon);
+                },
+                (error) => {
+                    console.error('Geolocation Error:', error);
+                    document.getElementById('location-display').textContent = 'Location access denied. Using default times (Makkah).';
+                    fetchPrayerTimes(KAABA_LAT, KAABA_LON);
+                    document.getElementById('qibla-degrees').textContent = 'N/A';
+                }
+            );
+        } else {
+            document.getElementById('location-display').textContent = 'Geolocation not supported. Using default times (Makkah).';
+            fetchPrayerTimes(KAABA_LAT, KAABA_LON);
+            document.getElementById('qibla-degrees').textContent = 'N/A';
+        }
+    }
+
+    async function fetchPrayerTimes(lat, lon) {
+        const date = new Date().toLocaleDateString('en-CA'); 
+        const PRAYER_API_URL = `https://api.aladhan.com/v1/timings/${date}?latitude=${lat}&longitude=${lon}&method=2`; 
+
+        try {
+            const response = await fetch(PRAYER_API_URL);
+            if (!response.ok) throw new Error('Network error from Aladhan API');
+            const data = await response.json();
+            
+            const timings = data.data.timings;
+            const outputDiv = document.getElementById('prayer-output');
+            
+            outputDiv.innerHTML = `
+                <ul class="list-group list-group-flush border rounded-3">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">**Fajr**<span class="fw-bold text-success">${timings.Fajr}</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">**Sunrise**<span class="text-muted">${timings.Sunrise}</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">**Dhuhr**<span class="fw-bold text-success">${timings.Dhuhr}</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">**Asr**<span class="fw-bold text-success">${timings.Asr}</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">**Maghrib**<span class="fw-bold text-success">${timings.Maghrib}</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">**Isha**<span class="fw-bold text-success">${timings.Isha}</span></li>
+                </ul>
+                <small class="text-muted mt-2 d-block">Calculation Method: ${data.data.meta.method.name}</small>
+            `;
+        } catch (error) {
+            console.error('Error fetching prayer times:', error);
+            document.getElementById('prayer-output').innerHTML = `<p class="text-danger"><i class="fas fa-exclamation-triangle"></i> Failed to load prayer times. Check API status or network.</p>`;
+        }
+    }
+    
+    function calculateQiblaDirection(userLat, userLon) {
+        const latR = (userLat * Math.PI) / 180;
+        const lonR = (userLon * Math.PI) / 180;
+        const kaabaLatR = (KAABA_LAT * Math.PI) / 180;
+        const kaabaLonR = (KAABA_LON * Math.PI) / 180;
+        const lonDelta = kaabaLonR - lonR;
+        const y = Math.sin(lonDelta);
+        const x = Math.cos(latR) * Math.tan(kaabaLatR) - Math.sin(latR) * Math.cos(lonDelta);
+        let qiblaBearing = (Math.atan2(y, x) * 180) / Math.PI;
+        if (qiblaBearing < 0) { qiblaBearing += 360; }
+        const qiblaDegrees = qiblaBearing.toFixed(2); 
+        document.getElementById('qibla-degrees').textContent = qiblaDegrees;
+        document.getElementById('qibla-arrow').style.transform = `translateX(-50%) rotate(${qiblaDegrees}deg)`;
+    }
+
+    // =================================================================
+    // QURAN FUNCTIONS (LOCAL/CDN FALLBACK)
+    // =================================================================
+
+    let surahMetadata = null; 
+
+    async function loadSurahList() {
+        const listOutput = document.getElementById('surah-list-output');
+        
+        if (surahMetadata) {
+            populateSurahListHtml(surahMetadata);
+            return;
+        }
+
+        listOutput.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p>Loading Surah list...</p></div>`;
+
+        try {
+            // 1. TRY LOCAL METADATA FILE
+            let infoResponse = await fetch(QURAN_INFO_LOCAL);
+            let usingCDN = false;
+
+            // 2. IF LOCAL FAILS, USE CDN
+            if (!infoResponse.ok) {
+                infoResponse = await fetch(QURAN_INFO_URL);
+                usingCDN = true;
+            }
+
+            if (!infoResponse.ok) throw new Error('Failed to fetch Surah list metadata from local file or CDN.');
+            
+            const data = await infoResponse.json();
+            surahMetadata = data.data.surahs;
+            populateSurahListHtml(surahMetadata, usingCDN);
+
+        } catch (error) {
+            console.error('Error loading Surah list:', error);
+            listOutput.innerHTML = `<p class="alert alert-danger p-3">Failed to load Surah list: ${error.message}</p>`;
+        }
+    }
+
+    function populateSurahListHtml(surahs, usingCDN = true) {
+        const listOutput = document.getElementById('surah-list-output');
+        let html = '';
+        surahs.forEach(surah => {
+            let tooltip = '';
+            if (surah.number === 1 && !usingCDN) {
+                tooltip = ' (Local)';
+            } else if (!usingCDN) {
+                 tooltip = ' (CDN)'; // Indicates which surahs rely on CDN
+            }
+            
+            html += `
+                <div class="surah-item" onclick="showSurah(${surah.number})">
+                    <span class="badge bg-primary me-2">${surah.number}</span>
+                    <span class="fw-bold">${surah.englishName}</span> (<span dir="rtl">${surah.name}</span>)${tooltip}
+                </div>
+            `;
+        });
+        listOutput.innerHTML = html;
+    }
+
+    async function showSurah(surahNumber) {
+        const contentOutput = document.getElementById('surah-content-output');
+        const titleElement = document.getElementById('surah-title');
+        
+        const meta = surahMetadata ? surahMetadata.find(s => s.number === surahNumber) : { englishName: 'Surah', name: '' };
+
+        titleElement.textContent = `${meta.englishName} - Loading...`;
+        contentOutput.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p>Fetching content...</p></div>`;
+        
+        let arabicURL, translationURL;
+        
+        // Use local files only for Surah 1 (al-Fatiha)
+        if (surahNumber === 1) {
+            arabicURL = QURAN_AYAH_LOCAL_ARABIC;
+            translationURL = QURAN_AYAH_LOCAL_ENGLISH;
+            titleElement.textContent += " (LOCAL)";
+        } else {
+            // Use CDN for all other Surahs
+            arabicURL = `${QURAN_AYAH_BASE_URL}/${QURAN_ARABIC_EDITION}/${surahNumber}.json`;
+            translationURL = `${QURAN_AYAH_BASE_URL}/${QURAN_TRANSLATION_EDITION}/${surahNumber}.json`;
+        }
+
+
+        try {
+            const [arabicResponse, translationResponse] = await Promise.all([
+                fetch(arabicURL),
+                fetch(translationURL)
+            ]);
+
+            if (!arabicResponse.ok || !translationResponse.ok) throw new Error('Failed to fetch Surah content.');
+
+            const arabicData = await arabicResponse.json();
+            const translationData = await translationResponse.json();
+
+            const surahName = arabicData.data.englishName;
+            const arabicName = arabicData.data.name;
+
+            titleElement.textContent = `Surah ${surahName} - ${arabicName}`;
+
+            let contentHTML = '';
+            const arabicAyahs = arabicData.data.ayahs;
+            const translationAyahs = translationData.data.ayahs;
+
+            for (let i = 0; i < arabicAyahs.length; i++) {
+                const arabicAyah = arabicAyahs[i].text;
+                const translationAyah = translationAyahs[i].text;
+                const ayahNumber = arabicAyahs[i].numberInSurah;
+
+                contentHTML += `
+                    <div class="verse-container">
+                        <p class="arabic-text text-end" dir="rtl">
+                            ${arabicAyah} <span class="badge bg-secondary">${ayahNumber}</span>
+                        </p>
+                        <p class="text-muted">
+                            <span class="badge bg-success me-2">${ayahNumber}</span>
+                            ${translationAyah}
+                        </p>
+                    </div>
+                `;
+            }
+
+            contentOutput.innerHTML = contentHTML;
+            document.querySelector('#quranReaderModal .modal-body').scrollTop = 0;
+
+        } catch (error) {
+            console.error('Error showing Surah:', error);
+            contentOutput.innerHTML = `<p class="alert alert-danger p-3">**Error loading Quran:** Could not load Surah content. Details: ${error.message}</p>`;
+        }
+    }
+    
+    // =================================================================
+    // HADITH SEARCH FUNCTION (LOCAL/CDN FALLBACK)
+    // =================================================================
+
+    let hadithCache = null; 
+
+    async function searchHadith() {
+        const query = document.getElementById('hadith-query').value.trim().toLowerCase();
+        const resultsOutput = document.getElementById('hadith-results-output');
+
+        if (query.length < 3) {
+            resultsOutput.innerHTML = `<p class="alert alert-warning text-center">Please enter at least 3 characters to search.</p>`;
+            return;
+        }
+
+        const loadingMessage = hadithCache ? "Searching Hadith..." : "Loading Sahih Muslim data (local or CDN)...";
+        resultsOutput.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-secondary" role="status"></div><p class="text-secondary mt-2">${loadingMessage}</p></div>`;
+
+        try {
+            if (!hadithCache) {
+                let response;
+
+                // 1. TRY LOCAL HADITH FILE
+                try {
+                    response = await fetch(HADITH_LOCAL_FILE);
+                    if (!response.ok) throw new Error('Local file not found.');
+                    resultsOutput.querySelector('p').textContent = 'Loaded from local file.';
+                } catch (e) {
+                    // 2. IF LOCAL FAILS, USE CDN
+                    resultsOutput.querySelector('p').textContent = 'Local file failed. Attempting CDN download...';
+                    response = await fetch(HADITH_CDN_URL);
+                }
+                
+                if (!response.ok) throw new Error('Failed to fetch Sahih Muslim data from any source.');
+                
+                const data = await response.json();
+                hadithCache = data.hadiths || []; 
+            }
+
+            // 2. Perform Local Search
+            const filteredHadiths = hadithCache.filter(h => 
+                (h.english || '').toLowerCase().includes(query) 
+            );
+
+            // 3. Display Results
+            let html = '';
+            if (filteredHadiths.length > 0) {
+                html = `<p class="text-success fw-bold">Found ${filteredHadiths.length} results in **Sahih Muslim**:</p>`;
+                filteredHadiths.slice(0, 10).forEach(h => { 
+                    html += `
+                        <div class="hadith-result shadow-sm">
+                            <p class="fw-bold mb-1" style="color: var(--primary-color);">
+                                Hadith No. ${h.id}
+                            </p>
+                            <p class="mb-0">${h.english}</p>
+                        </div>
+                    `;
+                });
+                if (filteredHadiths.length > 10) {
+                    html += `<p class="text-muted fst-italic mt-3">Showing the first 10 results. Refine your search for more.</p>`;
+                }
+            } else {
+                html = `<p class="alert alert-info text-center">No Hadiths found matching your query: **${query}**.</p>`;
+            }
+
+            resultsOutput.innerHTML = html;
+
+        } catch (error) {
+            console.error('Error during Hadith search:', error);
+            resultsOutput.innerHTML = `<p class="alert alert-danger text-center">**Critical Error:** Failed to fetch/process Hadith data. If the error persists, please verify the local files exist. Details: ${error.message}</p>`;
+        }
+    }
+</script>
+</body>
+</html>
