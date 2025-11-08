@@ -77,7 +77,6 @@
         .surah-item:hover {
             background-color: var(--light-bg);
         }
-        /* Style for Hadith results */
         .hadith-result {
             border-left: 3px solid var(--primary-color);
             padding-left: 15px;
@@ -86,13 +85,20 @@
             padding: 15px;
             border-radius: 5px;
         }
-        /* Style for Dhikr Counter */
         #dhikr-counter-display {
             font-size: 4rem;
             font-weight: bold;
             color: var(--primary-color);
             margin-bottom: 10px;
             display: block;
+        }
+        /* Chatbot Styles */
+        #chat-history p {
+            font-size: 0.9rem;
+        }
+        #chat-history .badge {
+            font-size: 0.8rem;
+            margin-right: 5px;
         }
     </style>
 </head>
@@ -109,7 +115,7 @@
                 <li class="nav-item"><a class="nav-link" href="#prayer-times"><i class="fas fa-clock"></i> Prayer</a></li>
                 <li class="nav-item"><a class="nav-link" href="#quran"><i class="fas fa-book-open"></i> Quran</a></li>
                 <li class="nav-item"><a class="nav-link" href="#hadith-search"><i class="fas fa-search"></i> Hadith</a></li>
-                <li class="nav-item"><a class="nav-link" href="#knowledge"><i class="fas fa-layer-group"></i> Hubs</a></li>
+                <li class="nav-item"><a class="nav-link" href="#chatbot"><i class="fas fa-robot"></i> Chatbot</a></li>
             </ul>
         </div>
     </div>
@@ -120,7 +126,7 @@
     <div class="p-5 mb-4 bg-white rounded-3 shadow">
         <div class="container-fluid py-5">
             <h1 class="display-5 fw-bold" style="color: var(--primary-color);">Your Comprehensive Islamic Hub</h1>
-            <p class="col-md-8 fs-4">Access **live, accurate data** for prayer times, Qibla direction, Quranic inspiration, and Hadith search.</p>
+            <p class="col-md-8 fs-4">Access **stable, reliable data** for prayer times, Qibla direction, Quranic inspiration, and Hadith search.</p>
             <p class="text-muted"><i class="fas fa-map-marker-alt"></i> Current Location: <span id="location-display">Determining location...</span></p>
         </div>
     </div>
@@ -158,13 +164,13 @@
     </div>
     
     <div class="row mb-5" id="quran">
-        <h2 class="text-center mb-4" style="color: var(--primary-color);">📖 Quran & Memorization Tools</h2>
+        <h2 class="text-center mb-4" style="color: var(--primary-color);">📖 Quran Reader</h2>
         <div class="col-12">
             <div class="card shadow feature-card">
-                <div class="card-header card-header-custom">✨ **Quran Reader** (CDN-Based Files)</div>
+                <div class="card-header card-header-custom">✨ **Quran Reader** (Local & CDN-Based)</div>
                 <div class="card-body">
                     <div id="quran-output" class="p-3 rounded bg-light border">
-                        <p class="text-center text-muted">Click the button below to load the full Quran list.</p>
+                        <p class="text-center text-muted">Surah Al-Fatiha is loaded locally. Other Surahs are fetched via CDN.</p>
                     </div>
                     <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#quranReaderModal" onclick="loadSurahList()"><i class="fas fa-book"></i> Read Full Quran</button>
                 </div>
@@ -176,9 +182,9 @@
         <h2 class="text-center mb-4" style="color: var(--primary-color);">🔍 Hadith Search Engine</h2>
         <div class="col-12">
             <div class="card shadow feature-card">
-                <div class="card-header card-header-custom">📚 **Search Sahih Muslim** (Client-Side CDN Search)</div>
+                <div class="card-header card-header-custom">📚 **Search Sahih Muslim** (Client-Side Local Search)</div>
                 <div class="card-body">
-                    <p class="text-muted">Loads the entire Sahih Muslim collection once for **fast client-side search**.</p>
+                    <p class="text-muted">Loads the **sahih-muslim.json** file from your local folder for fast, reliable search.</p>
                     <div class="input-group mb-3">
                         <input type="text" id="hadith-query" class="form-control" placeholder="E.g., 'intention' or 'wudu'" aria-label="Hadith Search Query">
                         <button class="btn btn-secondary" type="button" onclick="searchHadith()"><i class="fas fa-search"></i> Search</button>
@@ -192,7 +198,28 @@
         </div>
     </div>
 
-    <div class="row mb-5" id="knowledge">
+    <div class="row mb-5" id="chatbot">
+        <h2 class="text-center mb-4" style="color: var(--primary-color);">💡 **Islamic Knowledge Chatbot**</h2>
+        <div class="col-12">
+            <div class="card shadow feature-card">
+                <div class="card-header card-header-custom">💬 Ask the AI Scholar (Uses Free External Endpoint)</div>
+                <div class="card-body">
+                    <div id="chat-history" class="p-3 mb-3 border rounded" style="height: 300px; overflow-y: scroll; background-color: #f9f9f9;">
+                        <p class="text-muted">Hello! Ask me any question about the Quran, Hadith, or Islamic principles.</p>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="chat-input" class="form-control" placeholder="Ask your Islamic question..." onkeydown="if(event.key === 'Enter') sendChatQuery()">
+                        <button class="btn btn-primary" type="button" onclick="sendChatQuery()" id="chat-button">
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row mb-5">
         <h2 class="text-center mb-4" style="color: var(--primary-color);">🌐 Extended Features Hubs</h2>
         
         <div class="col-md-4 mb-4">
@@ -238,7 +265,7 @@
 <footer class="bg-dark text-white py-4 mt-5">
     <div class="container text-center">
         <p>&copy; 2025 The Global Ummah. **No Registration Needed.**</p>
-        <p class="mb-0"><small>Data powered by Aladhan API and stable GitHub CDN repositories.</small></p>
+        <p class="mb-0"><small>Data powered by Aladhan API and local JSON data.</small></p>
     </div>
 </footer>
 
@@ -279,23 +306,25 @@
     const KAABA_LAT = 21.422487;
     const KAABA_LON = 39.826206;
 
-    // --- QURAN CDN CONSTANTS (Local Fallback Configured) ---
-    // If these local files exist, they will be used first, otherwise the code falls back to CDN.
+    // --- QURAN CONSTANTS (Local Fallback Configured) ---
     const QURAN_INFO_LOCAL = 'info.json'; 
-    const QURAN_AYAH_LOCAL_ARABIC = '1.json'; // Local file for Surah 1 Arabic
-    const QURAN_AYAH_LOCAL_ENGLISH = '1-eng.json'; // Local file for Surah 1 English
+    const QURAN_AYAH_LOCAL_ARABIC = '1.json'; 
+    const QURAN_AYAH_LOCAL_ENGLISH = '1-eng.json'; 
     
-    // CDN Fallback (Only used if the local fetch fails)
+    // CDN Fallback 
     const QURAN_INFO_URL = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/info.json'; 
     const QURAN_AYAH_BASE_URL = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions'; 
     const QURAN_ARABIC_EDITION = 'quran-uthmani-min'; 
     const QURAN_TRANSLATION_EDITION = 'eng-sahih'; 
 
-    // --- HADITH CDN CONSTANTS (Local Fallback Configured) ---
+    // --- HADITH CONSTANTS (Local Only) ---
     const HADITH_LOCAL_FILE = 'sahih-muslim.json';
-    const HADITH_CDN_URL = 'https://cdn.jsdelivr.net/gh/sunnah-json/sahih-muslim@latest/sahih-muslim.json';
+    const HADITH_CDN_URL = null; // Disabled CDN access due to previous issues
     
-    // --- DHIKR COUNTER LOGIC (UNCHANGED) ---
+    // --- CHATBOT CONSTANTS (Key-less External API) ---
+    const CHATBOT_API_ENDPOINT = "https://islamandai.com/query-beta";
+
+    // --- DHIKR COUNTER LOGIC ---
     let currentCount = 0;
     const defaultTarget = 33; 
 
@@ -336,10 +365,11 @@
     });
 
     // =================================================================
-    // PRAYER/QIBLA FUNCTIONS (UNCHANGED - Aladhan is stable)
+    // PRAYER/QIBLA FUNCTIONS (Aladhan API - Known stable)
     // =================================================================
 
     function getUserLocationAndFetchData() {
+        // ... (Prayer time and Qibla logic remains the same, as Aladhan API is usually stable) ...
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -393,6 +423,7 @@
     }
     
     function calculateQiblaDirection(userLat, userLon) {
+        // ... (Qibla calculation logic remains the same) ...
         const latR = (userLat * Math.PI) / 180;
         const lonR = (userLon * Math.PI) / 180;
         const kaabaLatR = (KAABA_LAT * Math.PI) / 180;
@@ -428,7 +459,7 @@
             let infoResponse = await fetch(QURAN_INFO_LOCAL);
             let usingCDN = false;
 
-            // 2. IF LOCAL FAILS, USE CDN
+            // 2. IF LOCAL FAILS, USE CDN (For all other Surahs)
             if (!infoResponse.ok) {
                 infoResponse = await fetch(QURAN_INFO_URL);
                 usingCDN = true;
@@ -450,17 +481,17 @@
         const listOutput = document.getElementById('surah-list-output');
         let html = '';
         surahs.forEach(surah => {
-            let tooltip = '';
+            let statusTag = '';
             if (surah.number === 1 && !usingCDN) {
-                tooltip = ' (Local)';
-            } else if (!usingCDN) {
-                 tooltip = ' (CDN)'; // Indicates which surahs rely on CDN
+                statusTag = ' <span class="badge bg-success">Local</span>';
+            } else if (surah.number > 1) {
+                 statusTag = ' <span class="badge bg-warning text-dark">CDN</span>'; 
             }
             
             html += `
                 <div class="surah-item" onclick="showSurah(${surah.number})">
                     <span class="badge bg-primary me-2">${surah.number}</span>
-                    <span class="fw-bold">${surah.englishName}</span> (<span dir="rtl">${surah.name}</span>)${tooltip}
+                    <span class="fw-bold">${surah.englishName}</span> (<span dir="rtl">${surah.name}</span>)${statusTag}
                 </div>
             `;
         });
@@ -478,11 +509,11 @@
         
         let arabicURL, translationURL;
         
-        // Use local files only for Surah 1 (al-Fatiha)
+        // Use local files for Surah 1 (al-Fatiha) only
         if (surahNumber === 1) {
             arabicURL = QURAN_AYAH_LOCAL_ARABIC;
             translationURL = QURAN_AYAH_LOCAL_ENGLISH;
-            titleElement.textContent += " (LOCAL)";
+            titleElement.textContent = `Surah ${meta.englishName} - ${meta.name} (LOCAL)`;
         } else {
             // Use CDN for all other Surahs
             arabicURL = `${QURAN_AYAH_BASE_URL}/${QURAN_ARABIC_EDITION}/${surahNumber}.json`;
@@ -504,7 +535,10 @@
             const surahName = arabicData.data.englishName;
             const arabicName = arabicData.data.name;
 
-            titleElement.textContent = `Surah ${surahName} - ${arabicName}`;
+            // Ensure title is set correctly if not Surah 1
+            if (surahNumber !== 1) {
+                titleElement.textContent = `Surah ${surahName} - ${arabicName}`;
+            }
 
             let contentHTML = '';
             const arabicAyahs = arabicData.data.ayahs;
@@ -538,7 +572,7 @@
     }
     
     // =================================================================
-    // HADITH SEARCH FUNCTION (LOCAL/CDN FALLBACK)
+    // HADITH SEARCH FUNCTION (LOCAL ONLY)
     // =================================================================
 
     let hadithCache = null; 
@@ -552,25 +586,16 @@
             return;
         }
 
-        const loadingMessage = hadithCache ? "Searching Hadith..." : "Loading Sahih Muslim data (local or CDN)...";
+        const loadingMessage = hadithCache ? "Searching Hadith..." : "Loading Sahih Muslim data from local file (may take a moment)...";
         resultsOutput.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-secondary" role="status"></div><p class="text-secondary mt-2">${loadingMessage}</p></div>`;
 
         try {
             if (!hadithCache) {
                 let response;
 
-                // 1. TRY LOCAL HADITH FILE
-                try {
-                    response = await fetch(HADITH_LOCAL_FILE);
-                    if (!response.ok) throw new Error('Local file not found.');
-                    resultsOutput.querySelector('p').textContent = 'Loaded from local file.';
-                } catch (e) {
-                    // 2. IF LOCAL FAILS, USE CDN
-                    resultsOutput.querySelector('p').textContent = 'Local file failed. Attempting CDN download...';
-                    response = await fetch(HADITH_CDN_URL);
-                }
-                
-                if (!response.ok) throw new Error('Failed to fetch Sahih Muslim data from any source.');
+                // **CRITICAL: ONLY TRY LOCAL FILE**
+                response = await fetch(HADITH_LOCAL_FILE); 
+                if (!response.ok) throw new Error('Local file not found or failed to load. Check that "sahih-muslim.json" is in your folder.');
                 
                 const data = await response.json();
                 hadithCache = data.hadiths || []; 
@@ -606,9 +631,64 @@
 
         } catch (error) {
             console.error('Error during Hadith search:', error);
-            resultsOutput.innerHTML = `<p class="alert alert-danger text-center">**Critical Error:** Failed to fetch/process Hadith data. If the error persists, please verify the local files exist. Details: ${error.message}</p>`;
+            resultsOutput.innerHTML = `<p class="alert alert-danger text-center">**Critical Error:** Failed to process Hadith data. **Make sure 'sahih-muslim.json' is in the same folder as index.html.** Details: ${error.message}</p>`;
+        }
+    }
+
+    // =================================================================
+    // CHATBOT FUNCTIONS (KEY-LESS EXTERNAL API)
+    // =================================================================
+
+    async function sendChatQuery() {
+        const inputField = document.getElementById('chat-input');
+        const chatHistory = document.getElementById('chat-history');
+        const sendButton = document.getElementById('chat-button');
+        const query = inputField.value.trim();
+
+        if (!query) return;
+
+        // 1. Display user message
+        chatHistory.innerHTML += `<p class="text-end mb-1"><span class="badge bg-primary">You:</span> ${query}</p>`;
+        inputField.value = '';
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+
+        // 2. Show loading state
+        chatHistory.innerHTML += `<p class="mb-1" id="loading-indicator"><span class="badge bg-secondary">Scholar:</span> <span class="spinner-border spinner-border-sm me-2" role="status"></span> Thinking...</p>`;
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+        sendButton.disabled = true;
+
+        try {
+            // Construct the URL with the query parameter
+            const apiURL = `${CHATBOT_API_ENDPOINT}?question=${encodeURIComponent(query)}`;
+            
+            // Use a simple GET request (as required by this specific API)
+            const response = await fetch(apiURL);
+
+            if (!response.ok) throw new Error('Chatbot API call failed: ' + response.statusText);
+            
+            const data = await response.json();
+            
+            // This specific API returns the answer in the 'answer' field
+            const answer = data.answer || "Could not parse API response."; 
+
+            // 3. Display AI response
+            const loadingIndicator = document.getElementById('loading-indicator');
+            if (loadingIndicator) loadingIndicator.remove();
+            
+            chatHistory.innerHTML += `<p class="mb-1"><span class="badge bg-success">Scholar:</span> ${answer}</p>`;
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+        } catch (error) {
+            console.error('Chatbot Error:', error);
+            const loadingIndicator = document.getElementById('loading-indicator');
+            if (loadingIndicator) loadingIndicator.remove();
+            chatHistory.innerHTML += `<p class="mb-1"><span class="badge bg-danger">Error:</span> Failed to connect to the scholar. Check your network or that the external service is running.</p>`;
+        } finally {
+            sendButton.disabled = false;
+            chatHistory.scrollTop = chatHistory.scrollHeight;
         }
     }
 </script>
+
 </body>
 </html>
